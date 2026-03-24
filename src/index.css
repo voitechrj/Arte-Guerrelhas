@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --font-headline: "Noto Serif", serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-label: "Plus Jakarta Sans", sans-serif;
+
+  --color-primary: #795900;
+  --color-primary-container: #f0b936;
+  --color-primary-fixed: #ffdea0;
+  --color-on-primary: #ffffff;
+  
+  --color-secondary: #8a4777;
+  --color-secondary-container: #ffade3;
+  --color-on-secondary: #ffffff;
+  
+  --color-surface: #fcf9f4;
+  --color-surface-container: #f0ede9;
+  --color-surface-container-low: #f6f3ee;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #1c1c19;
+  --color-on-surface-variant: #514532;
+  
+  --color-outline: #847560;
+  --color-outline-variant: #d6c4ac;
+}
+
+@layer base {
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+  body {
+    @apply bg-surface font-body text-on-surface antialiased;
+  }
+}
+
+@layer utilities {
+  .asymmetric-shape-1 { 
+    border-radius: 60% 40% 70% 30% / 40% 50% 60% 70%; 
+  }
+  .asymmetric-shape-2 { 
+    border-radius: 30% 70% 40% 60% / 60% 30% 70% 40%; 
+  }
+}
