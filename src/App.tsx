@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, Brush, Leaf, Mail, MapPin, Share2, Camera, X } from "lucide-react";
 
@@ -50,27 +50,107 @@ const Modal = ({ isOpen, onClose, title, content }: ModalProps) => (
 export default function App() {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
+  const navLinks = [
+    { name: "Galeria", href: "#gallery" },
+    { name: "História", href: "#story" },
+    { name: "Artista", href: "#artist" },
+    { name: "Contato", href: "#contact" },
+  ];
 
   return (
     <div className="min-h-screen selection:bg-primary-container selection:text-on-primary-container">
       {/* Top Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/10">
         <div className="flex justify-between items-center px-6 md:px-8 py-4 md:py-6 max-w-6xl mx-auto">
-          <div className="font-headline text-xl md:text-2xl font-bold italic text-on-surface-variant tracking-tight hover:scale-105 transition-transform duration-300 cursor-pointer">
+          <div 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="font-headline text-xl md:text-2xl font-bold italic text-on-surface-variant tracking-tight hover:scale-105 transition-transform duration-300 cursor-pointer"
+          >
             Arte Guerrelhas
           </div>
           <div className="hidden md:flex items-center gap-10 font-headline text-lg tracking-tight ml-auto">
-            <a className="text-on-surface-variant/70 hover:text-primary transition-colors hover:scale-105" href="#gallery">Galeria</a>
-            <a className="text-on-surface-variant/70 hover:text-primary transition-colors hover:scale-105" href="#story">História</a>
-            <a className="text-on-surface-variant/70 hover:text-primary transition-colors hover:scale-105" href="#artist">Artista</a>
-            <a className="text-on-surface-variant/70 hover:text-primary transition-colors hover:scale-105" href="#contact">Contato</a>
+            {navLinks.map((link) => (
+              <a 
+                key={link.name}
+                className="text-on-surface-variant/70 hover:text-primary transition-colors hover:scale-105" 
+                href={link.href}
+              >
+                {link.name}
+              </a>
+            ))}
           </div>
           <div className="flex items-center gap-4">
-            <button className="md:hidden p-2 text-on-surface-variant">
-              <Menu size={24} />
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors"
+              aria-label="Toggle Menu"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-0 z-[60] bg-surface flex flex-col p-8 pt-24 gap-8 md:hidden"
+            >
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                className="absolute top-6 right-6 p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors"
+              >
+                <X size={32} />
+              </button>
+              
+              <div className="flex flex-col gap-2">
+                <span className="font-label text-xs uppercase tracking-[0.2em] text-secondary/60 mb-4">Navegação</span>
+                {navLinks.map((link, index) => (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="font-headline text-4xl font-bold text-on-surface-variant hover:text-primary transition-colors"
+                  >
+                    {link.name}
+                  </motion.a>
+                ))}
+              </div>
+
+              <div className="mt-auto pt-8 border-t border-outline-variant/10 flex flex-col gap-4">
+                <div className="flex gap-6">
+                  <Share2 className="text-secondary" size={24} />
+                  <Camera className="text-secondary" size={24} />
+                  <Mail className="text-secondary" size={24} />
+                </div>
+                <p className="font-body text-sm text-on-surface-variant/50 italic">
+                  Arte Guerrelhas — Esculpindo a alma da natureza.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Hero Section */}
@@ -91,17 +171,17 @@ export default function App() {
             <span className="inline-block px-4 py-1.5 rounded-full bg-secondary-container/30 text-secondary font-label text-xs md:text-sm tracking-widest uppercase font-semibold">
               Esculpido à Mão
             </span>
-            <h1 className="font-headline text-5xl md:text-8xl font-bold text-on-surface-variant leading-tight tracking-tighter">
+            <h1 className="font-headline text-4xl sm:text-5xl md:text-8xl font-bold text-on-surface-variant leading-tight tracking-tighter">
               Aura de <span className="text-secondary italic">Amora</span>
             </h1>
-            <p className="font-body text-lg md:text-2xl text-on-surface-variant/80 max-w-lg leading-relaxed">
+            <p className="font-body text-base md:text-2xl text-on-surface-variant/80 max-w-lg leading-relaxed">
               Cerâmica artesanal que captura o brilho do sol em pétalas de porcelana fria. Peças únicas, nascidas do encontro entre a delicadeza da flor e a profundidade da amora.
             </p>
-            <div className="flex flex-wrap gap-4 md:gap-6 pt-4">
-              <button className="px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-semibold rounded-full hover:scale-105 transition-transform duration-300 shadow-xl shadow-primary/10">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 pt-4">
+              <button className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-semibold rounded-full hover:scale-105 transition-transform duration-300 shadow-xl shadow-primary/10">
                 Explorar Galeria
               </button>
-              <button className="px-6 md:px-8 py-3 md:py-4 border border-outline-variant/30 text-secondary font-semibold rounded-full hover:scale-105 transition-transform duration-300">
+              <button className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 border border-outline-variant/30 text-secondary font-semibold rounded-full hover:scale-105 transition-transform duration-300">
                 Nossa História
               </button>
             </div>
@@ -140,7 +220,7 @@ export default function App() {
       </section>
 
       {/* Mural/Gallery Section */}
-      <section id="gallery" className="py-24 md:py-32 bg-surface-container-low">
+      <section id="gallery" className="py-24 md:py-32 bg-surface-container-low scroll-mt-20">
         <div className="container mx-auto px-6 md:px-8 max-w-6xl">
           <div className="max-w-3xl mb-16 md:mb-20">
             <h2 className="font-headline text-4xl md:text-5xl font-bold text-on-surface-variant mb-6">Mural de Criações</h2>
@@ -168,7 +248,7 @@ export default function App() {
 
             <motion.div 
               whileHover={{ y: -10 }}
-              className="md:col-span-4 group overflow-hidden rounded-full bg-surface-container-lowest shadow-sm border border-outline-variant/10"
+              className="md:col-span-4 group overflow-hidden rounded-2xl md:rounded-full bg-surface-container-lowest shadow-sm border border-outline-variant/10"
             >
               <div className="relative overflow-hidden h-full aspect-[3/4] md:aspect-auto">
                 <img 
@@ -196,7 +276,7 @@ export default function App() {
 
             <motion.div 
               whileHover={{ y: -10 }}
-              className="md:col-span-4 group overflow-hidden rounded-[4rem] bg-surface-container-lowest shadow-sm"
+              className="md:col-span-4 group overflow-hidden rounded-2xl md:rounded-[4rem] bg-surface-container-lowest shadow-sm"
             >
               <div className="relative overflow-hidden aspect-square">
                 <img 
@@ -226,7 +306,7 @@ export default function App() {
       </section>
 
       {/* Artist Section */}
-      <section id="artist" className="py-24 md:py-32 bg-surface overflow-hidden">
+      <section id="artist" className="py-24 md:py-32 bg-surface overflow-hidden scroll-mt-20">
         <div className="container mx-auto px-6 md:px-8 max-w-6xl grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -267,7 +347,7 @@ export default function App() {
             <img 
               src="https://picsum.photos/seed/artist/800/1000" 
               alt="A Artista" 
-              className="w-full aspect-[4/5] object-cover rounded-[3rem] shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
+              className="w-full aspect-[4/5] object-cover rounded-[3rem] shadow-2xl md:grayscale hover:grayscale-0 transition-all duration-700"
               referrerPolicy="no-referrer"
             />
           </motion.div>
@@ -275,7 +355,7 @@ export default function App() {
       </section>
 
       {/* Process Section */}
-      <section id="process" className="py-24 md:py-32 bg-surface-container-low">
+      <section id="process" className="py-24 md:py-32 bg-surface-container-low scroll-mt-20">
         <div className="container mx-auto px-6 md:px-8 max-w-6xl grid lg:grid-cols-2 gap-16 md:gap-24 items-center">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
@@ -328,7 +408,7 @@ export default function App() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 md:py-32 bg-surface-container">
+      <section id="contact" className="py-24 md:py-32 bg-surface-container scroll-mt-20">
         <div className="container mx-auto px-6 md:px-8 max-w-5xl">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
